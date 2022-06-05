@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Staking is Ownable {
     using Counters for Counters.Counter;
-    StakingReserve public immutable reserve;
+    StakingReserve public reserve;
     IERC20 public immutable gold;
     event StakeUpdate(
         address account,
@@ -43,10 +43,16 @@ contract Staking is Ownable {
      * @dev Initialize
      * @notice This is the initialize function, run on deploy event
      * @param tokenAddr_ address of main token
-     * @param reserveAddress_ address of reserve contract
      */
-    constructor(address tokenAddr_, address reserveAddress_) {
+    constructor(address tokenAddr_) {
         gold = IERC20(tokenAddr_);
+    }
+
+    function setReserve(address reserveAddress_) public onlyOwner {
+        require(
+            reserveAddress_ != address(0),
+            "Staking: Invalid reserve address"
+        );
         reserve = StakingReserve(reserveAddress_);
     }
 
@@ -88,7 +94,7 @@ contract Staking is Ownable {
         );
         require(
             _stakePackage.isOffline == false,
-            "Staking: Invalid stake package"
+            "Staking: Package is offline"
         );
 
         _stakePackage.isOffline = true;
@@ -102,7 +108,7 @@ contract Staking is Ownable {
      */
     function stake(uint256 amount_, uint256 packageId_) external {
         StakePackage memory _stakePackage = stakePackages[packageId_];
-        require(_stakePackage.minStaking > 0, "Staking: Stake package non-existence");
+        require(packageId_ > 0, "Staking: Stake package non-existence");
         require(_stakePackage.isOffline == false, "Staking: Package is offline");
         require(amount_ > _stakePackage.minStaking, "Staking: stake amount must be greater than min stake");
         
@@ -131,7 +137,7 @@ contract Staking is Ownable {
         StakePackage memory _stakePackage = stakePackages[packageId_];
         StakingInfo memory _stakingInfo = stakes[_msgSender()][packageId_];
 
-        require(_stakingInfo.amount > 0, "Staking: Invalid stake");
+        require(packageId_ > 0, "Staking: Invalid stake");
         require(
             (block.timestamp - _stakingInfo.timePoint) >= _stakePackage.lockTime,
             "Staking: lockTime is not enough"
@@ -155,7 +161,7 @@ contract Staking is Ownable {
         StakePackage memory _stakePackage = stakePackages[packageId_];
         StakingInfo memory _stakingInfo = stakes[_msgSender()][packageId_];
         uint256 _stakeTime = block.timestamp - _stakingInfo.timePoint;
-        uint256 _profit = (_stakeTime*_stakingInfo.amount*getAprOfPackage(packageId_)) / 10**_stakePackage.decimal;
+        uint256 _profit = (_stakeTime*_stakingInfo.amount*_stakePackage.rate) / 10**_stakePackage.decimal;
 
         return _stakingInfo.totalProfit + _profit;
     }
