@@ -42,6 +42,6 @@ npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 ```
 
 # Contract address
-Gold address: 0x5FbDB2315678afecb367f032d93F642f64180aa3
-Staking address: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
-StakingReserve address: 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0
+Gold address: 0x4F56Ce9C18eb050DD70A5B93c48311D240e18632
+Staking address: 0x7cC5b5B95B7e97d638e88652F66355e278dA836A
+StakingReserve address: 0x5087cbB482A30776ff1c43166045cC54Cc4C1E11
