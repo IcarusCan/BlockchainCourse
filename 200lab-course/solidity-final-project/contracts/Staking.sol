@@ -89,7 +89,7 @@ contract Staking is Ownable {
     function removeStakePackage(uint256 packageId_) public onlyOwner {
         StakePackage storage _stakePackage = stakePackages[packageId_];
         require(
-            _stakePackage.minStaking > 0,
+            packageId_> 0,
             "Staking: Stake package non-existence"
         );
         require(

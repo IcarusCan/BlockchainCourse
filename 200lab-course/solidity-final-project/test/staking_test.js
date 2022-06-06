@@ -74,8 +74,8 @@ describe("Staking", function () {
     })
 
     describe("removeStakePackage", function () {
-        it("should revert if minStaking = 0", async function () {
-          await expect(staking.removeStakePackage(1)).to.be.revertedWith("Staking: Stake package non-existence")
+        it("should revert if ID = 0", async function () {
+          await expect(staking.removeStakePackage(0)).to.be.revertedWith("Staking: Stake package non-existence")
         })
         it("should revert if stake package was offline", async function () {
           await staking.addStakePackage(defaultRate, defaultDecimal, defaultMinStaking, oneYear)
