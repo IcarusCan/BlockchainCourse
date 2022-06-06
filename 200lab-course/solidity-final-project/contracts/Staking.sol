@@ -161,13 +161,13 @@ contract Staking is Ownable {
         StakePackage memory _stakePackage = stakePackages[packageId_];
         StakingInfo memory _stakingInfo = stakes[_msgSender()][packageId_];
         uint256 _stakeTime = block.timestamp - _stakingInfo.timePoint;
-        uint256 _profit = (_stakeTime*_stakingInfo.amount*_stakePackage.rate) / 10**_stakePackage.decimal;
+        uint256 _profit = (_stakeTime*_stakingInfo.amount*getAprOfPackage(packageId_)) / 10**_stakePackage.decimal;
 
         return _stakingInfo.totalProfit + _profit;
     }
 
     function getAprOfPackage(uint256 packageId_) public view returns (uint256) {
         StakePackage memory _stakePackage = stakePackages[packageId_];
-        return (_stakePackage.rate*365*86400); //APR in second(s)
+        return _stakePackage.rate;
     }
 }

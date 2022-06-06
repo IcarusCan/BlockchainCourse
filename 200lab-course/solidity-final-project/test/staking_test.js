@@ -135,7 +135,8 @@ describe("Staking", function () {
           expect(stakeInfo.startTime).to.be.equal(startBlock.timestamp)
           expect(stakeInfo.timePoint).to.be.equal(block.timestamp)
           
-          let profit = defaultStakeAmount.mul(oneYear).mul(defaultRate).div(10 ** defaultDecimal)
+          let apr = await staking.getAprOfPackage(1)
+          let profit = defaultStakeAmount.mul(oneYear).mul(apr).div(10 ** defaultDecimal)
           expect(stakeInfo.totalProfit).to.be.equal(profit)
           console.log(await ethers.utils.formatEther(profit))
           await expect(stakeTx).to.emit(staking, 'StakeUpdate')
@@ -165,7 +166,8 @@ describe("Staking", function () {
         it("should unstake correctly", async function () {
           await network.provider.send("evm_increaseTime", [oneYear])
           let unstakeTx = await staking.connect(staker).unStake(1)
-          let profit = defaultStakeAmount.mul(oneYear).mul(defaultRate).div(10 ** defaultDecimal)
+          let apr = await staking.getAprOfPackage(1)
+          let profit = defaultStakeAmount.mul(oneYear).mul(apr).div(10 ** defaultDecimal)
           await expect(unstakeTx).to.emit(staking, 'StakeReleased')
             .withArgs(staker.address, 1, defaultStakeAmount, profit);
           expect(await gold.balanceOf(staker.address)).to.be.equal(stakerBalance.add(profit))
@@ -180,10 +182,11 @@ describe("Staking", function () {
           await staking.connect(staker).stake(defaultStakeAmount, 1)
           await network.provider.send("evm_increaseTime", [oneYear])
           let unstakeTx = await staking.connect(staker).unStake(1)
-          let profit = defaultStakeAmount.mul(oneYear).mul(defaultRate).div(10 ** defaultDecimal)
-            .add(defaultStakeAmount.mul(2).mul(oneWeek).mul(defaultRate).div(10 ** defaultDecimal))
-            .add(defaultStakeAmount.mul(3).mul(oneYear).mul(defaultRate).div(10 ** defaultDecimal))
-            .add(defaultStakeAmount.mul(4).mul(oneYear).mul(defaultRate).div(10 ** defaultDecimal))
+          let apr = await staking.getAprOfPackage(1)
+          let profit = defaultStakeAmount.mul(oneYear).mul(apr).div(10 ** defaultDecimal)
+            .add(defaultStakeAmount.mul(2).mul(oneWeek).mul(apr).div(10 ** defaultDecimal))
+            .add(defaultStakeAmount.mul(3).mul(oneYear).mul(apr).div(10 ** defaultDecimal))
+            .add(defaultStakeAmount.mul(4).mul(oneYear).mul(apr).div(10 ** defaultDecimal))
           await expect(unstakeTx).to.emit(staking, 'StakeReleased')
             .withArgs(staker.address, 1, defaultStakeAmount.mul(4), profit);
             expect(await gold.balanceOf(staker.address)).to.be.equal(stakerBalance.add(profit))
