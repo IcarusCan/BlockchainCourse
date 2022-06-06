@@ -29,6 +29,11 @@ module.exports = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    bsctestnet: {
+      url: process.env.BSC_TESTNET_URL || "",
+      accounts:
+        process.env.PRIVATE_KEY_TESTNET_BSC !== undefined ? [process.env.PRIVATE_KEY_TESTNET_BSC] : [],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
